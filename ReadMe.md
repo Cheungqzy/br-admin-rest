@@ -5,7 +5,6 @@
 ## 基础内容
 
 - 签名过滤器：SignCheckFilter
-- 服务调用跟踪过滤器：YHTraceFilter
 - accessToken校验拦截器：AccessApiInterceptor
 - 请求日志拦截器：LogInterceptor
 - `config.properties`中的应用名默认使用`artifactId`的值
