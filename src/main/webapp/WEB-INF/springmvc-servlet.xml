@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:p="http://www.springframework.org/schema/p" xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans  http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/context  http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        http://www.springframework.org/schema/aop  http://www.springframework.org/schema/aop/spring-aop-3.0.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd"
+       default-autowire="byName">
+    <context:annotation-config/>
+
+    <!-- 自动搜索@Controller标注的类 -->
+
+    <context:component-scan base-package="com.brother"/>
+
+    <!--<mvc:resources mapping="static" location="static"/>-->
+    <!--<mvc:resources mapping="h5" location="h5"/>-->
+    <context:property-placeholder ignore-unresolvable="true" location="classpath*:/config.properties"/>
+    <!-- 开启自动切面代理 -->
+    <aop:aspectj-autoproxy/>
+
+    <bean id="defaultViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+          p:order="3">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="contentType" value="text/html"/>
+        <property name="prefix" value="/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <bean class="com.brother.filter.LogInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+    <!-- 这是简单配置，代替bean节点那种显示加载bean的配置方式，可以自动加载必须得如下两个bean -->
+    <!--<mvc:annotation-driven />-->
+    <!-- 这是标准配置，可以解决ResponseBody中文乱码问题 -->
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+        <property name="messageConverters">
+            <list>
+                <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                    <property name="supportedMediaTypes">
+                        <list>
+                            <value>text/html;charset=UTF-8</value>
+                            <value>text/plain;charset=UTF-8</value>
+                        </list>
+                    </property>
+                    <property name="writeAcceptCharset" value="false"/>
+                </bean>
+                <ref bean="fastJsonHttpMessageConverter"/>
+                <!--<bean class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter"></bean>-->
+            </list>
+        </property>
+    </bean>
+
+    <bean id="fastJsonHttpMessageConverter" class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+        <property name="features">
+            <list>
+                <value>DisableCircularReferenceDetect</value>
+                <!--<value>WriteMapNullValue</value>-->
+                <!--<value>WriteNullListAsEmpty</value>-->
+                <!--<value>WriteNullStringAsEmpty</value>-->
+            </list>
+        </property>
+    </bean>
+
+    <mvc:resources mapping="/swagger-ui.html" location="classpath:/META-INF/resources/"/>
+    <mvc:resources mapping="/webjars/**" location="classpath:/META-INF/resources/webjars/"/>
+
+    <bean class="com.brother.swagger.SwaggerConfig"/>
+
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+        <property name="interceptors">
+            <list>
+                <ref bean="accessApiInterceptor"/>
+            </list>
+        </property>
+    </bean>
+    <bean id="accessApiInterceptor"
+          class="com.brother.interceptor.AccessApiInterceptor">
+    </bean>
+
+    <!-- 上传文件配置 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" >
+        <property name="defaultEncoding" value="UTF-8" />
+        <property name="maxUploadSize" value="512000000"/>
+    </bean>
+
+</beans>
+
+
+

@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.brother</groupId>
+    <version>1.0-SNAPSHOT</version>
+    <artifactId>br-admin-rest</artifactId>
+    <packaging>war</packaging>
+
+    <build>
+        <finalName>br-admin-rest</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <filters>
+            <filter>src/main/resources/filters/${env}.properties</filter>
+        </filters>
+        <plugins>
+            <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>8.1.16.v20140903</version>
+                <configuration>
+                    <jvmArgs>-server -XX:PermSize=64M -XX:MaxPermSize=128m</jvmArgs>
+                    <connectors>
+                        <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+                            <port>8080</port>
+                        </connector>
+                    </connectors>
+                    <webApp>
+                        <contextPath>/br-admin-rest</contextPath>
+                    </webApp>
+                    <scanIntervalSeconds>4</scanIntervalSeconds>
+                    <stopPort>9967</stopPort>
+                    <stopKey>foo</stopKey>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.5</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>external.atlassian.jgitflow</groupId>
+                <artifactId>jgitflow-maven-plugin</artifactId>
+                <version>1.0-m5.1</version>
+                <configuration>
+                    <noDeploy>false</noDeploy>
+                    <allowSnapshots>true</allowSnapshots>
+                    <!-- see goals wiki page for configuration options -->
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-archetype-plugin</artifactId>
+                <version>2.2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+
+
+    </build>
+
+    <properties>
+        <maven.test.skip>true</maven.test.skip>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <version.slf4j>1.7.9</version.slf4j>
+        <version.slf4j-log4j>1.7.9</version.slf4j-log4j>
+        <version.spring>4.2.6.RELEASE</version.spring>
+
+        <version.log4j>1.2.16</version.log4j>
+        <version.urlrewritefilter>3.1.0</version.urlrewritefilter>
+        <version.jstl>1.2</version.jstl>
+        <version.mysql>5.1.38</version.mysql>
+        <version.c3p0>0.9.1.2</version.c3p0>
+        <version.servlet>2.5</version.servlet>
+        <version.junit>4.12</version.junit>
+
+        <version.framework>1.0-SNAPSHOT</version.framework>
+        <version.web-frame>1.0-SNAPSHOT</version.web-frame>
+        <version.member-model>1.0-SNAPSHOT</version.member-model>
+        <version.member-api>1.0-SNAPSHOT</version.member-api>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.yonghui</groupId>
+            <artifactId>framework</artifactId>
+            <version>${version.framework}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.yonghui</groupId>
+            <artifactId>web-frame</artifactId>
+            <version>${version.web-frame}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.yonghui</groupId>
+            <artifactId>member-api</artifactId>
+            <version>${version.member-api}</version>
+        </dependency>
+
+        <!-- 单元测试用到的依赖库 -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${version.junit}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>dubbo</artifactId>
+            <version>2.5.3</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>spring</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.sgroschupf</groupId>
+            <artifactId>zkclient</artifactId>
+            <version>0.1</version>
+        </dependency>
+        <dependency>
+			<groupId>com.yonghui</groupId>
+			<artifactId>yhtrace-client</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+        <dependency>
+            <groupId>com.yonghui.apigateway</groupId>
+            <artifactId>register</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.yonghui.framework</groupId>
+            <artifactId>log4web</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <env>dev</env>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>integration</id>
+            <properties>
+                <env>integration</env>
+            </properties>
+        </profile>
+        <profile>
+            <id>stage</id>
+            <properties>
+                <env>stage</env>
+                <!-- 改成release 版本依赖 -->
+                <version.makeup-api>1.0-SNAPSHOT</version.makeup-api>
+                <version.framework>1.0-SNAPSHOT</version.framework>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <env>prod</env>
+            </properties>
+        </profile>
+        <profile>
+            <id>online</id>
+            <properties>
+                <env>online</env>
+                <!-- 改成release 版本 -->
+                <version.makeup-api>1.0-SNAPSHOT</version.makeup-api>
+                <version.framework>1.0-SNAPSHOT</version.framework>
+            </properties>
+        </profile>
+    </profiles>
+    <distributionManagement>
+        <repository>
+            <id>nexus-releases</id>
+            <url>http://nexus.yonghuivip.com/nexus/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>nexus-snapshots</id>
+            <url>http://nexus.yonghuivip.com/nexus/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+
+</project>
