@@ -1,7 +1,5 @@
 package com.brother.controller;
 
-import com.brother.common.constants.Constant;
-import com.brother.common.constants.SaleChannelEnum;
 import com.brother.security.TokenRecognizer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -10,8 +8,6 @@ import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.com.brother.common.exception.BaseKnownException;
-import javax.com.brother.common.exception.log.ExceptionLogger;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -22,22 +18,6 @@ public class BaseController {
 
     @Autowired
     private TokenRecognizer tokenRecognizer;
-
-
-    @ModelAttribute("saleChannelId")
-    protected Integer getSaleChannelId(@RequestParam(value = "platform") String platform) {
-
-        if (platform.compareToIgnoreCase("ios") == 0) {
-            return SaleChannelEnum.APPLE.value();
-        }
-
-        if (platform.compareToIgnoreCase("android") == 0) {
-            return SaleChannelEnum.ANDROID.value();
-        }
-
-        throw BaseKnownException.getUserErrorException(Constant.ERRORCODE_INVALID_SYSTEM_PARAMETER,
-                String.format(Constant.ERRORMESSAGE_INVALID_SYSTEM_PARAMETER, "platform"));
-    }
 
     @ModelAttribute("version")
     protected String getVersion(@RequestParam(value = "v", required = false) String v) {
@@ -54,7 +34,6 @@ public class BaseController {
                 resource = new ClassPathResource("/config.properties");
                 props = PropertiesLoaderUtils.loadProperties(resource);
                 String env = (String) props.get("env");
-
                 switch (env) {
                     case "dev":
                     case "integration":
@@ -67,7 +46,6 @@ public class BaseController {
                 }
 
             } catch (IOException e) {
-                ExceptionLogger.log(e, null);
                 isTestEnv = false;
             }
         }

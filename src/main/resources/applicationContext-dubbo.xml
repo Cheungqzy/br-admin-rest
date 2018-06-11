@@ -16,8 +16,8 @@
     <dubbo:registry protocol="zookeeper" address="${dubbo.registry.address.client}" id="zookeeperClient"/>
 
     <!-- 调用dubbo接口 -->
-    <dubbo:reference id="memberService" interface="com.brother.membercenter.api.IMemberService"
-                     check="false" version="1.0" url="" registry="zookeeperClient" protocol="dubbo" timeout="15000" retries="0"/>
+    <!--<dubbo:reference id="memberService" interface="com.brother.membercenter.api.IMemberService"
+                     check="false" version="1.0" url="" registry="zookeeperClient" protocol="dubbo" timeout="15000" retries="0"/>-->
 
 
 </beans>

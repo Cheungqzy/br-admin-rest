@@ -1,6 +1,5 @@
 package com.brother.interceptor;
 
-import com.brother.membercenter.model.entity.YhMemberOperation;
 import com.brother.security.TokenRecognizer;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,17 +37,6 @@ public class AccessApiInterceptor extends HandlerInterceptorAdapter {
 
         MemberRequest annotation2 = method.getAnnotation(MemberRequest.class);
         if (annotation2 != null) {
-            YhMemberOperation memberOperation = new YhMemberOperation();
-            String deviceId = request.getParameter("deviceid");
-            Date timestamp = getTimeStamp(request);
-            memberOperation.setIp(getIpAddr(request));
-            memberOperation.setTimestamp(timestamp);
-            memberOperation.setDeviceId(deviceId);
-            memberOperation.setPlatform(request.getParameter("platform"));
-            memberOperation.setVersion(request.getParameter("v"));
-            memberOperation.setChannel(request.getParameter("channel"));
-            memberOperation.setRequestId(getRequestId(deviceId, timestamp));
-            request.setAttribute("memberOperation", memberOperation);
         }
 
         return true;

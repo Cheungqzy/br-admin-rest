@@ -1,10 +1,8 @@
 package com.brother.filter;
 
 import com.alibaba.dubbo.rpc.RpcContext;
+import com.alibaba.fastjson.JSON;
 import com.brother.common.constants.Constant;
-import com.brother.common.log.Logger;
-import com.brother.common.log.LoggerFactory;
-import com.brother.common.web.ExceptionHandler;
 import com.brother.common.web.RequestContext;
 import com.brother.common.web.WebResult;
 import com.brother.common.web.WebResultRender;
@@ -12,13 +10,13 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.com.brother.common.exception.BaseKnownException;
-import javax.com.brother.common.exception.log.ExceptionLogger;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +32,9 @@ import java.util.UUID;
  * Created by shp on 2015/10/28.
  */
 public class SignCheckFilter extends OncePerRequestFilter {
-    private static Logger logger = LoggerFactory.getLogger("requestcontext");
+
+    private static Logger logger = LoggerFactory.getLogger(SignCheckFilter.class);
+
     private static boolean isLogContext = false;
     private final String SECRET = "YONGHUI601933";
     private final int interval = 5; // MINUTE
@@ -138,29 +138,15 @@ public class SignCheckFilter extends OncePerRequestFilter {
 
             // 校验放在这里，以便于获取请求上下文
             if (StringUtils.isBlank(platform)) {
-                throw new BaseKnownException(
-                        Constant.ERRORCODE_API_SIGN_INVALID, String.format(
-                        Constant.ERRORMESSAGE_API_SIGN_INVALID,
-                        "platform"));
             }
 
             if (StringUtils.isBlank(channel)) {
-                throw new BaseKnownException(
-                        Constant.ERRORCODE_API_SIGN_INVALID, String.format(
-                        Constant.ERRORMESSAGE_API_SIGN_INVALID,
-                        "channel"));
+
             }
             if (StringUtils.isBlank(v)) {
-                throw new BaseKnownException(
-                        Constant.ERRORCODE_API_SIGN_INVALID, String.format(
-                        Constant.ERRORMESSAGE_API_SIGN_INVALID, "v"));
             }
 
             if (StringUtils.isBlank(timestampStr)) {
-                throw new BaseKnownException(
-                        Constant.ERRORCODE_API_SIGN_INVALID, String.format(
-                        Constant.ERRORMESSAGE_API_SIGN_INVALID,
-                        "timestamp"));
             }
 
             Long clientTime = NumberUtils.toLong(timestampStr, 0L);
@@ -168,28 +154,14 @@ public class SignCheckFilter extends OncePerRequestFilter {
             //Check sign only if client time is greater than 0. because some time client didn't pass correct timestamp
             if (clientTime > 0L && !uri.contains("/api/commonconfig") && !uri.contains("/api/patch") && Math.abs(
                     serverTime - clientTime) > interval * 60 * 1000) {
-                throw new BaseKnownException(
-                        Constant.ERRORCODE_API_SIGN_TIMEOUT,
-                        Constant.ERRORMESSAGE_API_SIGN_TIMEOUT);
             }
 
             if (!serverSign.equalsIgnoreCase(clientSign)) {
-                throw new BaseKnownException(
-                        Constant.ERRORCODE_API_SIGN_INVALID, String.format(
-                        Constant.ERRORMESSAGE_API_SIGN_INVALID, "sign"));
             }
             filterChain.doFilter(requestWrapper, httpServletResponse);
-        } catch (BaseKnownException e) {
-            ExceptionLogger.log(e, null);
-            WebResult result = new WebResult(e.getErrorCode(), e.getMessage(), (Object) null);
-            ExceptionHandler.logRequestCtx(result);
-            WebResultRender.render(result, Constant.HTTPCODE_USER_ERROR, httpServletResponse);
         } catch (Exception e) {
-            ExceptionLogger.log(e, null);
-            WebResult result = new WebResult(Constant.INTERNAL_SERVER_CODE,
-                    Constant.INTERNAL_SERVER_MESSAGE,
-                    (Object) null);
-            ExceptionHandler.logRequestCtx(result);
+            WebResult result = new WebResult(Constant.INTERNAL_SERVER_CODE, Constant.INTERNAL_SERVER_MESSAGE, (Object) null);
+            logger.error("{} {}", e.getMessage(), JSON.toJSONString(result));
             WebResultRender.render(result, Constant.HTTPCODE_USER_ERROR, httpServletResponse);
         } finally {
             // 清楚当前线程的数据
@@ -216,7 +188,7 @@ public class SignCheckFilter extends OncePerRequestFilter {
                     return false;
             }
         } catch (IOException e) {
-            ExceptionLogger.log(e, null);
+            logger.error(e.getMessage());
             return false;
         }
     }

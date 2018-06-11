@@ -19,10 +19,7 @@
     <context:component-scan base-package="com.brother">
     </context:component-scan>
 
-    <bean id="exceptionResolver" class="com.brother.common.web.ExceptionHandler"/>
-
     <util:properties id="config" location="classpath:/config.properties"/>
-
 
     <!-- 定义受环境影响易变的变量 -->
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">

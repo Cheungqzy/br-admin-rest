@@ -1,7 +1,5 @@
 package com.brother.filter;
 
-import com.brother.common.log.Logger;
-import com.brother.common.log.LoggerFactory;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -13,7 +11,6 @@ import java.util.Map;
  * Created by shp on 2015/11/17.
  */
 public class LogInterceptor implements HandlerInterceptor {
-    private Logger logger = LoggerFactory.getLogger("apistat");
 
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o) throws Exception {
@@ -44,6 +41,5 @@ public class LogInterceptor implements HandlerInterceptor {
             }
             sb.append(key).append("=").append(value).append(",");
         }
-        logger.info(uri + "|" + (endTime - startTime) + "|" + sb.toString());
     }
 }
